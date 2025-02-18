@@ -1,8 +1,10 @@
 # train_grpo.py (https://gist.github.com/willccbb/4676755236bb08cab5f4e54a0475d6fb)
 #
+# pip install flash-attn --no-build-isolation
 # pip install git+https://github.com/huggingface/trl.git accelerate transformers datasets peft wandb tqdm
+# accelerate launch grpo_demo.py
 #
-# TODO: use vLLM
+# TODO: use vLLM, temperature?
 #
 import re
 import torch
@@ -113,21 +115,22 @@ training_args = GRPOConfig(
     lr_scheduler_type='cosine',
     logging_steps=1,
     bf16=True,
-    per_device_train_batch_size=1,
+    per_device_train_batch_size=8,
     gradient_accumulation_steps=4,
-    num_generations=16,
+    num_generations=8,
     max_prompt_length=256,
     max_completion_length=786,
     num_train_epochs=1,
     save_steps=100,
     max_grad_norm=0.1,
-    report_to="wandb",
+    #report_to="wandb",
     log_on_each_node=False,
+    
 )
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     torch_dtype=torch.bfloat16,
-    attn_implementation="flash_attention_2",
+    #attn_implementation="flash_attention_2", #error with Qwen2
     device_map=None
 ).to("cuda")
         
