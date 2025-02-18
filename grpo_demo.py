@@ -98,9 +98,9 @@ if model == "Llama":
     output_dir = "outputs/Llama-1B-GRPO"
     run_name = "Llama-1B-GRPO-gsm8k"
 else:
-    model_name = "Qwen/Qwen2.5-1.5B-Instruct"
-    output_dir="outputs/Qwen-1.5B-GRPO"
-    run_name="Qwen-1.5B-GRPO-gsm8k"
+    model_name = "Qwen/Qwen2.5-0.5B-Instruct"
+    output_dir="outputs/Qwen-0.5B-GRPO"
+    run_name="Qwen-0.5B-GRPO-gsm8k"
     
 training_args = GRPOConfig(
     output_dir=output_dir,
