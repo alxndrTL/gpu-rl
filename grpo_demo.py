@@ -2,6 +2,8 @@
 #
 # pip install git+https://github.com/huggingface/trl.git accelerate transformers datasets peft wandb tqdm
 #
+# TODO: use vLLM
+#
 import re
 import torch
 from datasets import load_dataset, Dataset
