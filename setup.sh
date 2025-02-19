@@ -3,7 +3,7 @@ set -e
 
 echo "=== Cloning simple_grpo repository ==="
 # Clone the repo into a temporary directory
-git clone https://github.com/minosvasilias/simple_grpo.git
+git clone https://github.com/alxndrTL/gpu-rl.git
 cd simple_grpo
 
 echo "=== Setting up the Python environment ==="
