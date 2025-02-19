@@ -42,7 +42,6 @@ def parse_responses(completions: list[dict]) -> list[dict]:
 # ---------------- REWARD functions ----------------
 # Score accuracy of answer
 def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
-    log_rewards(prompts, completions, answer)
     parsed_responses = parse_responses(completions)
     rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
     return rewards
@@ -61,6 +60,7 @@ def format_reasoning_reward(prompts, completions, answer, **kwargs) -> list[floa
 
 # Log rewards and example responses
 def log_rewards(prompts, completions, answer, **kwargs):
+    return 0
     rewards = {
         "accuracy": accuracy_reward(prompts, completions, answer),
         "format_number": format_number_reward(prompts, completions, answer),
@@ -82,6 +82,7 @@ def log_rewards(prompts, completions, answer, **kwargs):
         + f"-" * 10
         + f"\nRewards:\n{json.dumps(rewards, indent=2)}"
     )
+    return 0
 
 # ---------------- DATASET functions ----------------
 # Extracts gsm8k answers from the dataset
@@ -114,7 +115,8 @@ def main(training_args, model_args):
         processing_class=tokenizer,
         reward_funcs=[format_reasoning_reward,
                       format_number_reward,
-                      accuracy_reward],
+                      accuracy_reward,
+                      log_rewards],
         args=training_args,
         train_dataset=data,
     )
