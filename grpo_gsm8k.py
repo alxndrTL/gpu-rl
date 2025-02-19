@@ -15,8 +15,6 @@ from transformers import AutoTokenizer
 
 from trl import GRPOConfig, GRPOTrainer, ModelConfig, TrlParser
 
-
-
 SYSTEM_PROMPT = """Reason about the user request within <|think|> tokens, and only afterwards write your final response.
 The expected format for your response is as follows:
 
@@ -26,7 +24,7 @@ Reasoning
 Answer
 """
 
-
+# ---------------- PARSING functions ----------------
 # Extracts thinking content and final model answer
 def parse_reasoning_response(text: str) -> dict:
     pattern = r"<\|think\|>\s*(.*?)\s*<\|think\|>\s*(.*)"
@@ -35,21 +33,16 @@ def parse_reasoning_response(text: str) -> dict:
         return {"thinking_content": "", "response": text}
     return {"thinking_content": match.group(1).strip(), "response": match.group(2).strip()}
 
-
 def get_completion_content(completion: dict) -> str:
     return completion[0]["content"]
-
 
 def parse_responses(completions: list[dict]) -> list[dict]:
     return [parse_reasoning_response(get_completion_content(c)) for c in completions]
 
-# Score accuracy of answer and log rewards
-def accuracy_reward_log(prompts, completions, answer, **kwargs):
-    log_rewards(prompts, completions, answer)
-    return accuracy_reward(prompts, completions, answer)
-
+# ---------------- REWARD functions ----------------
 # Score accuracy of answer
 def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
+    log_rewards(prompts, completions, answer)
     parsed_responses = parse_responses(completions)
     rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
     return rewards
@@ -65,7 +58,6 @@ def format_reasoning_reward(prompts, completions, answer, **kwargs) -> list[floa
     parsed_responses = parse_responses(completions)
     rewards = [0.5 if r["thinking_content"] and r["response"] else 0.0 for r in parsed_responses]
     return rewards
-
 
 # Log rewards and example responses
 def log_rewards(prompts, completions, answer, **kwargs):
@@ -91,23 +83,13 @@ def log_rewards(prompts, completions, answer, **kwargs):
         + f"\nRewards:\n{json.dumps(rewards, indent=2)}"
     )
 
-
-# Initialize reward functions
-reward_funcs = [
-    format_reasoning_reward,
-    format_number_reward,
-    accuracy_reward_log,
-]
-
-
-# Extracts gsm8k answers
+# ---------------- DATASET functions ----------------
+# Extracts gsm8k answers from the dataset
 def extract_hash_answer(text: str) -> str | None:
     if "####" not in text:
         return None
     return text.split("####")[1].strip()
 
-
-# Loads GSM8K dataset
 def load_data(split="train") -> Dataset:
     data = load_dataset("openai/gsm8k", "main")[split]
     data = data.map(
@@ -121,25 +103,22 @@ def load_data(split="train") -> Dataset:
     )
     return data
 
-
 def main(training_args, model_args):
-    # Load the GSM8K dataset.
     data = load_data()
 
-    # Initialize tokenizer (adds pad token).
     tokenizer = AutoTokenizer.from_pretrained(model_args.model_name_or_path)
     tokenizer.pad_token = tokenizer.eos_token
 
-    # Initialize the GRPO trainer with the new dataset and reward functions.
     trainer = GRPOTrainer(
         model=model_args.model_name_or_path,
         processing_class=tokenizer,
-        reward_funcs=reward_funcs,
+        reward_funcs=[format_reasoning_reward,
+                      format_number_reward,
+                      accuracy_reward],
         args=training_args,
         train_dataset=data,
     )
 
-    # Train the model and save/push checkpoints.
     trainer.train()
     trainer.save_model(training_args.output_dir)
 
