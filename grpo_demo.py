@@ -1,6 +1,6 @@
 # train_grpo.py (https://gist.github.com/willccbb/4676755236bb08cab5f4e54a0475d6fb)
 #
-# pip install flash-attn --no-build-isolation
+# pip install flash-attn==2.3.6
 # pip install git+https://github.com/huggingface/trl.git accelerate transformers datasets peft wandb tqdm
 # accelerate launch grpo_demo.py
 #
@@ -108,6 +108,7 @@ training_args = GRPOConfig(
     output_dir=output_dir,
     run_name=run_name,
     learning_rate=5e-6,
+    beta=0.01,
     adam_beta1 = 0.9,
     adam_beta2 = 0.99,
     weight_decay = 0.1,
