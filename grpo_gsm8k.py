@@ -40,10 +40,10 @@ def parse_responses(completions: list[dict]) -> list[dict]:
     return [parse_reasoning_response(get_completion_content(c)) for c in completions]
 
 # ---------------- REWARD functions ----------------
-# Score accuracy of answer
-def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
+# Score formatting of reasoning content
+def format_reasoning_reward(prompts, completions, answer, **kwargs) -> list[float]:
     parsed_responses = parse_responses(completions)
-    rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
+    rewards = [0.5 if r["thinking_content"] and r["response"] else 0.0 for r in parsed_responses]
     return rewards
 
 # Score formatting of number (integer expected)
@@ -52,10 +52,10 @@ def format_number_reward(prompts, completions, answer, **kwargs) -> list[float]:
     rewards = [0.5 if r["response"].isdigit() else 0.0 for r in parsed_responses]
     return rewards
 
-# Score formatting of reasoning content
-def format_reasoning_reward(prompts, completions, answer, **kwargs) -> list[float]:
+# Score accuracy of answer
+def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
     parsed_responses = parse_responses(completions)
-    rewards = [0.5 if r["thinking_content"] and r["response"] else 0.0 for r in parsed_responses]
+    rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
     return rewards
 
 # Log rewards and example responses
