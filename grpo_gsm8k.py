@@ -6,6 +6,7 @@ Adapted from https://github.com/minosvasilias/simple_grpo
 """
 
 # TODO : sampling temperature ?
+# TODO : track GSM8k eval
 
 import re
 import json
@@ -53,9 +54,19 @@ def format_number_reward(prompts, completions, answer, **kwargs) -> list[float]:
     return rewards
 
 # Score accuracy of answer
+#def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
+#    parsed_responses = parse_responses(completions)
+#    rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
+#    return rewards
+
 def accuracy_reward(prompts, completions, answer, **kwargs) -> list[float]:
     parsed_responses = parse_responses(completions)
-    rewards = [2.0 if r["response"] == a else 0.0 for r, a in zip(parsed_responses, answer)]
+    rewards = []
+    for r, a in zip(parsed_responses, answer):
+        response = r["response"].strip()
+        numbers = re.findall(r'-?\d+', response)
+        last_number = numbers[-1] if numbers else ""
+        rewards.append(2.0 if last_number == str(a) else 0.0)
     return rewards
 
 # Log rewards and example responses
@@ -97,7 +108,7 @@ def load_data(split="train") -> Dataset:
         lambda x: {
             "prompt": [
                 {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": x["question"] + "\nAnswer with a number only."},
+                {"role": "user", "content": x["question"] + "\nAfter your reasoning between <|think|>, answer with a number only."},
             ],
             "answer": extract_hash_answer(x["answer"]),
         }

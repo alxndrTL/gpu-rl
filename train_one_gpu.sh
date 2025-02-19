@@ -2,8 +2,8 @@ source venv/bin/activate
 ts=$(date +%Y%m%d_%H%M%S)
 
 accelerate launch --num_processes 1 grpo_gsm8k.py \
-    --output_dir outputs/Llama-3.2-1B-Instruct.GRPO \
-    --model_name_or_path meta-llama/Llama-3.2-1B-Instruct \
+    --output_dir outputs/Qwen2.5-1.5B-Instruct.GRPO \
+    --model_name_or_path Qwen/Qwen2.5-1.5B-Instruct \
     --max_prompt_length 2048 \
     --max_completion_length 2048 \
     --per_device_train_batch_size 1 \
