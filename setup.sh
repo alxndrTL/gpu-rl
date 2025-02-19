@@ -1,11 +1,6 @@
 #!/bin/bash
 set -e
 
-echo "=== Cloning gpu-rl repository ==="
-# Clone the repo into a temporary directory
-git clone https://github.com/alxndrTL/gpu-rl.git
-cd gpu-rl
-
 echo "=== Setting up the Python environment ==="
 # Create and activate a virtual environment
 python -m venv venv
