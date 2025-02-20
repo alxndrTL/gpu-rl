@@ -1,6 +1,6 @@
 # gpu-rl : early experiments with training LLMs with RL
 
-## Experiment 1 : GRPO on Qwen2.5-1.5B-Instruct with GSM8K dataset
+## Experiment 1 : GRPO on Qwen2.5-1.5B-Instruct with GSM8K dataset
 
 The most classic experiment one can do to get its hands into the subject.
 You can reproduce this experiment using only one A/H100 GPU by running `./train_one_gpu.sh`. 
