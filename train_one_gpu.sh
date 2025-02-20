@@ -1,12 +1,12 @@
 source venv/bin/activate
 ts=$(date +%Y%m%d_%H%M%S)
 
-accelerate launch --num_processes 1 grpo_gsm8k.py \
+accelerate launch --num_processes 1 --config_file configs/one_gpu.yaml grpo_gsm8k.py \
     --output_dir outputs/Qwen2.5-1.5B-Instruct.GRPO \
     --model_name_or_path Qwen/Qwen2.5-1.5B-Instruct \
     --max_prompt_length 2048 \
     --max_completion_length 2048 \
-    --per_device_train_batch_size 1 \
+    --per_device_train_batch_size 4 \
     --gradient_accumulation_steps 20 \
     --learning_rate 3e-6 \
     --adam_beta1 0.9 \
