@@ -23,7 +23,7 @@ Here is the completion length through training :
     <img src="assets/seqlen.png" alt="seqlen" width="500"/>
 </p>
 
-## Visualizer of how prompts are organized into batches
+## Visualizer of how prompts are organized into batches and steps
 One can easily be lost in the different parameters to the TRL trainer : `num_generations`, `per_device_train_batch_size`, `gradient_accumulation_steps`, `max_steps`, `num_iterations`...
 
 I find this visualization, hidden in `trl/trainer/grpo_trainer.py`, very helpful :
