@@ -16,9 +16,12 @@ echo "=== Installing custom TRL branch ==="
 git clone https://github.com/huggingface/trl
 cd trl
 git checkout main
+git fetch origin pull/2669/head:grpo-vram-optimization
+git checkout -b trl_custom
 git cherry-pick ccc95472f6245f2db00986a08ca16da68bf32c14 # tested, stable commit from PR#2669 by @andyl98
+#git merge --no-ff grpo-vram-optimization
 #git cherry-pick ccc95472f6245f2db00986a08ca16da68bf32c14 # tested, stable commit from PR#2669 by @andyl98 TODO
-pip install .
+pip install --force-reinstall .
 cd ..
 
 # Ask user for Huggingface API key to set HF_TOKEN env var
