@@ -12,7 +12,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 # Install custom TRL branch for memory optimization
-echo "=== Installing custom TRL branch ==="
+echo "=== Installing TRL ==="
 git clone https://github.com/huggingface/trl.git trl_custom
 cd trl_custom
 pip install .
