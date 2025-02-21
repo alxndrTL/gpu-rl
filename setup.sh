@@ -17,7 +17,7 @@ echo "=== Installing custom TRL branch ==="
 git clone https://github.com/huggingface/trl.git trl_custom
 cd trl_custom
 # Tested, stable commit
-git checkout ccc95472f6245f2db00986a08ca16da68bf32c14
+#git checkout ccc95472f6245f2db00986a08ca16da68bf32c14
 pip install .
 cd ..
 
