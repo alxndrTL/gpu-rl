@@ -22,3 +22,22 @@ Here is the completion length through training :
 <p align="center">
     <img src="assets/seqlen.png" alt="seqlen" width="500"/>
 </p>
+
+## Visualizer of how prompts are organized into batches
+One can easily be lost in the different parameters to the TRL trainer : `num_generations`, `per_device_train_batch_size`, `gradient_accumulation_steps`, `max_steps`, `num_iterations`...
+
+I find this visualization, hidden in `trl/trainer/grpo_trainer.py`, very helpful :
+
+<p align="center">
+    <img src="assets/viz.png" alt="seqlen" width="1000"/>
+</p>
+
+- `num_generations` (or G in the paper) is <b>the number of samples/completions per prompt.</b> It is specific to GRPO, as the G differents completions of the same prompt form a "group" in <b>Group</b> Relative Policy Optimization.
+
+- `per_device_train_batch_size` is <b>the number of trajectories each GPU will hold during the forward and backward pass.</b> This is sometimes called the micro batch size. After the forward+backward, the gradient is accumulated. Trajectory is prompt+completion. When short on memory, reducing the batch size is the first option to consider.
+
+- `gradient_accumulation_steps` <b>controls the total batch size.</b> While `per_device_train_batch_size` specifies the batch size per forward+backward, we are often limited by GPU memory and want a bigger batch size that the one that can fit on our hardware. This is why we can do multiples passes and accumulate the gradients between those passes, and only at the end, after `gradient_accumulation_steps` passes, update the parameters. This is computationally equivalent to do one big pass with batch size `per_device_train_batch_size*gradient_accumulation_steps`, without using extra memory.
+
+- `max_steps` <b>is the number of RL steps to execute.</b> One RL step is one update of the parameters (so, with batch size `per_device_train_batch_size*gradient_accumulation_steps`). In the little visualizer, RL step = "global step". <br>
+
+- `num_iterations` <b>allows reusing a trajectory multiple times</b>, by spending multiple RL steps on the same batch of trajectories. In the visualizer, `num_iterations=2`, meaning for example that `global_steps` `0` and `1` will share the same underlying data. Not going into too much detail here, but this is possible with the policy optimization algorithms (TRPO,PPO,GRPO), because these algorithms prevent the updated policy to go too far from the current one. With these safeguards, it is possible to reuse multiple times the same data, which is very helpful from a data efficiency point of view because that means the algorithm can learn more from a trajectory before throwing it away. In this LLM+RL case, it's also a great speedup for RL training as collecting trajectories is very time consuming.
