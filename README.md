@@ -1,4 +1,4 @@
-# gpu-rl : early experiments with training LLMs with RL
+# early experiments with training LLMs with RL
 
 ## Experiment 1 : GRPO on Qwen2.5-1.5B-Instruct with GSM8K dataset
 
